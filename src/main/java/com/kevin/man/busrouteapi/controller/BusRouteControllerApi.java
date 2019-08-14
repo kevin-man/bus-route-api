@@ -6,6 +6,7 @@ import com.kevin.man.busrouteapi.dto.Route;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 public interface BusRouteControllerApi {
 
+    String ISSUER_UUID = "458a6e21-dd21-11e8-a2e1-0242ac120002";
     /**
      * Retrieve all routes endpoint for acquiring all persisted routes.
      *
@@ -33,7 +35,7 @@ public interface BusRouteControllerApi {
      */
     @ApiOperation(value = "Get route by name", notes = "Find a specific route by route name")
     @ApiResponses(value = @ApiResponse(code = 200, message = "Route data retrieved successfully"))
-    Route getRoute(@RequestBody final String routeName);
+    Route getRoute(@RequestBody final String routeName) throws NotFoundException;
 
     /**
      * Retrieve all Reservations of a route endpoint.

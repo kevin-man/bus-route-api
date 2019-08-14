@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,11 +32,11 @@ public class ReservationModel {
     @Column(name = "name")
     private String childName;
 
-    @Column(name = "route_id", columnDefinition = "BINARY(16)")
-    private UUID routeId;
+    @Column(name = "route_name")
+    private String routeName;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stop_id")

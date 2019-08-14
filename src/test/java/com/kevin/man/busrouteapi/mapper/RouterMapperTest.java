@@ -1,40 +1,41 @@
 package com.kevin.man.busrouteapi.mapper;
 
-import com.kevin.man.busrouteapi.dto.Reservation;
 import com.kevin.man.busrouteapi.dto.Route;
-import com.kevin.man.busrouteapi.dto.Stop;
 import com.kevin.man.busrouteapi.model.RouteModel;
 import org.junit.Test;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
 import java.util.UUID;
+
+import static com.kevin.man.busrouteapi.BusRouteDataTestUtil.buildRoute;
+import static com.kevin.man.busrouteapi.BusRouteDataTestUtil.buildRouteModel;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 public class RouterMapperTest {
 
     private RouteMapper routeMapper = RouteMapper.INSTANCE;
 
+    private static final UUID ROUTE_ID = UUID.randomUUID();
+    private static final Route ROUTE = buildRoute(ROUTE_ID);
+    private static final RouteModel ROUTE_MODEL = buildRouteModel(ROUTE_ID);
+
     @Test
     public void toRouteTestSuccess() {
-        Route route = Route.builder()
-                .routeId(UUID.randomUUID())
-                .date(LocalDate.of(2019, 02, 01))
-                .routeName("TEST_ROUTE")
-                .stops(Collections.singletonList(Stop.builder()
-                        .stopId(UUID.randomUUID())
-                        .latitude(12.1)
-                        .longitude(0.12)
-                        .time(LocalTime.of(12, 20))
-                        .stopName("TEST")
-                        .reservations(Collections.singletonList(Reservation.builder()
-                                .date(LocalDate.of(2019, 2, 1))
-                                .childName("SAM")
-                                .build()))
-                        .build()))
-                .build();
+        Route result = routeMapper.toRoute(ROUTE_MODEL);
 
-        RouteModel routeModel = routeMapper.toRouteModel(route);
-        System.out.println(routeModel);
+        assertNotNull(result);
+        assertEquals(ROUTE.getRouteId(), result.getRouteId());
+        assertEquals(ROUTE.getDate(), result.getDate());
+        assertEquals(ROUTE.getRouteName(), result.getRouteName());
+    }
+
+    @Test
+    public void toRouteModelSuccess() {
+        RouteModel result = routeMapper.toRouteModel(ROUTE);
+
+        assertNotNull(result);
+        assertEquals(ROUTE_MODEL.getRouteId(), result.getRouteId());
+        assertEquals(ROUTE_MODEL.getDate(), result.getDate());
+        assertEquals(ROUTE_MODEL.getRouteName(), result.getRouteName());
     }
 }
