@@ -3,11 +3,12 @@ package com.kevin.man.busrouteapi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.kevin.man.busrouteapi.dto.Route;
+import com.kevin.man.busrouteapi.dto.JsonRouteObject;
 import com.kevin.man.busrouteapi.mapper.RouteMapper;
 import com.kevin.man.busrouteapi.model.RouteModel;
+import com.kevin.man.busrouteapi.model.StopModel;
 import com.kevin.man.busrouteapi.repo.RouteRepository;
-import com.kevin.man.busrouteapi.repo.StopRespository;
+import com.kevin.man.busrouteapi.repo.StopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -15,15 +16,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 public class Run {
 
     @Autowired
-    public Run(RouteRepository routeRepository, StopRespository stopRespository) {
+    public Run(RouteRepository routeRepository, StopRepository stopRepository) {
         this.routeRepository = routeRepository;
-        this.stopRespository = stopRespository;
+        this.stopRepository = stopRepository;
     }
 
     public static void main(String[] args) {
@@ -34,7 +37,7 @@ public class Run {
     private String jsonPath;
 
     private final RouteRepository routeRepository;
-    private final StopRespository stopRespository;
+    private final StopRepository stopRepository;
     private final RouteMapper routeMapper = RouteMapper.INSTANCE;
 
     @PostConstruct
@@ -44,12 +47,16 @@ public class Run {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
 
-        Route route = objectMapper.readValue(new File(jsonPath), Route.class);
-        RouteModel routeModel = routeMapper.toRouteModel(route);
+        JsonRouteObject jsonRouteObject = objectMapper.readValue(new File(jsonPath), JsonRouteObject.class);
 
-        RouteModel savedRouteModel = routeRepository.save(routeModel);
+        List<RouteModel> routeModels = routeMapper.toRouteModels(jsonRouteObject.getRoutes());
+        List<RouteModel> result = routeRepository.saveAll(routeModels);
+        List<StopModel> stops = new ArrayList<>();
+        for (RouteModel routeModel : result) {
+            routeModel.getStops().forEach(stop -> stop.setRoute(routeModel));
+            stops.addAll(routeModel.getStops());
+        }
 
-        routeModel.getStops().forEach(stop -> stop.setRoute(savedRouteModel));
-        stopRespository.saveAll(routeModel.getStops());
+        stopRepository.saveAll(stops);
     }
 }

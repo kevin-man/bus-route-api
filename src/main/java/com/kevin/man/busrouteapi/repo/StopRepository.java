@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface StopRespository extends JpaRepository<StopModel, UUID> {
+public interface StopRepository extends JpaRepository<StopModel, UUID> {
 }
