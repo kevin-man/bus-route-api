@@ -10,6 +10,8 @@ This can also be altered within the application.properties file itself or via pa
   api as a jar.
   
 Currently hardcoded URLS to access the api:
+  
   H2 Database Console: http://localhost:8080/h2-console
+  
   Swagger UI: http://localhost:8080/swagger-ui.html
   
