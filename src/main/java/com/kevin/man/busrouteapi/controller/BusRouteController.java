@@ -2,56 +2,108 @@ package com.kevin.man.busrouteapi.controller;
 
 import com.kevin.man.busrouteapi.dto.Reservation;
 import com.kevin.man.busrouteapi.dto.Route;
+import com.kevin.man.busrouteapi.service.BusRouteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "bus-routes", produces = "application/json")
+@RequestMapping(produces = "application/json")
 public class BusRouteController implements BusRouteControllerApi {
 
+    private BusRouteService busRouteService;
 
-    @PostMapping(value = "{issuerId}/validate-deal", consumes = {"application/json"})
-    @ResponseStatus(NO_CONTENT)
+    @Autowired
+    public BusRouteController(BusRouteService busRouteService) {
+        this.busRouteService = busRouteService;
+    }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @GetMapping(value = "/routes")
     public List<Route> getRoutes() {
-        return null;
+        return busRouteService.getRoutes();
     }
 
-    @Override
-    public Route getRoute(String routeName) {
-        return null;
+    /**
+     * {@inheritDoc}.
+     */
+    @GetMapping(value = "/routes/{route_name}")
+    public Route getRoute(@PathVariable("route_name") String routeName) {
+        return busRouteService.getRoute(routeName);
     }
 
-    @Override
-    public Route getReservations(String routeName, LocalDate date) {
-        return null;
+    /**
+     * {@inheritDoc}.
+     */
+    @GetMapping(value = "/reservations/{route_name}/{date}")
+    public Route getReservations(
+            @PathVariable("route_name") final String routeName,
+            @PathVariable("date") @DateTimeFormat(pattern = "dd-MM-yyyy") final LocalDate date) {
+
+        return busRouteService.getRouteAndStops(routeName, date);
     }
 
-    @Override
-    public Reservation createReservation(String routeName, LocalDate date, Reservation reservation) {
-        return null;
+    /**
+     * {@inheritDoc}.
+     */
+    @PostMapping(value = "/reservations/{route_name}/{date}")
+    public Reservation createReservation(
+            @PathVariable("route_name") String routeName,
+            @PathVariable("date") @DateTimeFormat(pattern = "dd-MM-yyyy") final LocalDate date,
+            @RequestBody @Valid final Reservation reservation) {
+
+        return busRouteService.createReservation(routeName, date, reservation);
     }
 
-    @Override
-    public Reservation updateReservation(String routeName, LocalDate date, UUID reservationId, Reservation reservation) {
-        return null;
+    /**
+     * {@inheritDoc}.
+     */
+    @PutMapping(value = "/reservations/{route_name}/{date}/{reservations_id}")
+    public Reservation updateReservation(
+            @PathVariable("route_name") final String routeName,
+            @PathVariable("date") @DateTimeFormat(pattern = "dd-MM-yyyy") final LocalDate date,
+            @PathVariable("reservations_id") UUID reservationId,
+            @RequestBody @Valid final Reservation reservation) {
+
+        return busRouteService.updateReservation(routeName, date, reservationId, reservation);
     }
 
-    @Override
-    public ResponseEntity deleteReservation(String routeName, LocalDate date, UUID reservationId) {
-        return null;
+    /**
+     * {@inheritDoc}.
+     */
+    @DeleteMapping("/reservations/{route_name}/{date}/{reservations_id}")
+    public ResponseEntity deleteReservation(
+            @PathVariable("route_name") final String routeName,
+            @PathVariable("date") @DateTimeFormat(pattern = "dd-MM-yyyy") final LocalDate date,
+            @PathVariable("reservations_id") final UUID reservationId) {
+
+        return busRouteService.deleteReservation(routeName, date, reservationId);
     }
 
-    @Override
-    public Reservation getReservation(String routeName, LocalDate date, UUID reservationId) {
-        return null;
+    /**
+     * {@inheritDoc}.
+     */
+    @GetMapping("/reservations/{route_name}/{date}/{reservations_id}")
+    public Reservation getReservation(
+            @PathVariable("route_name") final String routeName,
+            @PathVariable("date") @DateTimeFormat(pattern = "dd-MM-yyyy") final LocalDate date,
+            @PathVariable("reservations_id") final UUID reservationId) {
+
+        return busRouteService.getReservation(routeName, date,reservationId);
     }
 }

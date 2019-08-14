@@ -16,6 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig extends WebMvcConfigurationSupport {
 
 
+    // Docket bean for enabling swagger.
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).select()
@@ -25,6 +26,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .build();
     }
 
+    // Add all swagger resources for documentation.
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("swagger-ui.html")
